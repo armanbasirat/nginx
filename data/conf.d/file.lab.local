@@ -1,0 +1,18 @@
+server {
+        listen 443 ssl;
+        listen 80;
+        server_name file.lab.local;
+        ssl_certificate /certs/file.lab.local/file.lab.local.cer;
+        ssl_certificate_key /certs/file.lab.local/file.lab.local.key;
+
+        if ($scheme = http) {
+                return 301 https://$host$request_uri;
+        }
+
+        location / {
+                include conf.d/allowed_ip_list;
+                proxy_pass      http://192.168.1.1:8082;
+                proxy_set_header Host            $host;
+                proxy_set_header X-Forwarded-For $remote_addr;
+        }
+}
